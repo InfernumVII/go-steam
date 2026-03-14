@@ -588,7 +588,9 @@ func init() {
 	proto.RegisterType((*CMsgAuthTicket)(nil), "CMsgAuthTicket")
 	proto.RegisterType((*CCDDBAppDetailCommon)(nil), "CCDDBAppDetailCommon")
 	proto.RegisterType((*CMsgAppRights)(nil), "CMsgAppRights")
-	proto.RegisterExtension(E_MsgpoolSoftLimit)
+	// NOTE(fork): E_MsgpoolSoftLimit (field 50000 on MessageOptions) removed to avoid
+	// duplicate registration conflict with go-dota2/protocol.E_MaximumSizeBytes.
+	// Both use field 50000 on google.protobuf.MessageOptions (Valve upstream issue).
 	proto.RegisterExtension(E_MsgpoolHardLimit)
 	proto.RegisterExtension(E_ForcePhpGeneration)
 	proto.RegisterExtension(E_PhpOutputAlwaysNumber)

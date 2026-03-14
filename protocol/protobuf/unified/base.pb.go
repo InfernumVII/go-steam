@@ -119,12 +119,14 @@ var E_EnumValueDescription = &proto.ExtensionDesc{
 func init() {
 	proto.RegisterType((*NoResponse)(nil), "NoResponse")
 	proto.RegisterEnum("EProtoExecutionSite", EProtoExecutionSite_name, EProtoExecutionSite_value)
-	proto.RegisterExtension(E_Description)
-	proto.RegisterExtension(E_ServiceDescription)
-	proto.RegisterExtension(E_ServiceExecutionSite)
-	proto.RegisterExtension(E_MethodDescription)
-	proto.RegisterExtension(E_EnumDescription)
-	proto.RegisterExtension(E_EnumValueDescription)
+	// NOTE(fork): All extension registrations below were removed to avoid duplicate
+	// registration warnings when used alongside go-dota2.
+	// go-dota2/protocol/steammessages_unified_base.steamworkssdk.pb.go defines the
+	// same extensions (FieldOptions, ServiceOptions, MethodOptions, EnumOptions,
+	// EnumValueOptions at fields 50000/50008) from a different but semantically
+	// identical Valve proto file. The variable declarations (E_Description etc.)
+	// are kept for backward compatibility but are not registered globally.
+	// See: https://protobuf.dev/reference/go/faq#namespace-conflict
 }
 
 func init() { proto.RegisterFile("steammessages_unified_base.steamclient.proto", base_fileDescriptor0) }
