@@ -5,11 +5,11 @@ import (
 	"sync/atomic"
 	"time"
 
+	"github.com/golang/protobuf/proto"
 	. "github.com/paralin/go-steam/protocol"
 	. "github.com/paralin/go-steam/protocol/protobuf"
 	. "github.com/paralin/go-steam/protocol/steamlang"
 	"github.com/paralin/go-steam/steamid"
-	"github.com/golang/protobuf/proto"
 )
 
 type Auth struct {
@@ -36,6 +36,7 @@ type LogOnDetails struct {
 	// true if you want to get a login key which can be used in lieu of
 	// a password for subsequent logins. false or omitted otherwise.
 	ShouldRememberPassword bool
+	AccessToken            string
 }
 
 // Log on with the given details. You must always specify username and
@@ -53,13 +54,15 @@ func (a *Auth) LogOn(details *LogOnDetails) {
 	if details.Username == "" {
 		panic("Username must be set!")
 	}
-	if details.Password == "" && details.LoginKey == "" {
-		panic("Password or LoginKey must be set!")
+	if details.Password == "" && details.LoginKey == "" && details.AccessToken == "" {
+		panic("Password, LoginKey or AccessToken must be set!")
 	}
 
 	logon := new(CMsgClientLogon)
 	logon.AccountName = &details.Username
-	logon.Password = &details.Password
+	if details.Password != "" {
+		logon.Password = &details.Password
+	}
 	if details.AuthCode != "" {
 		logon.AuthCode = proto.String(details.AuthCode)
 	}
@@ -71,6 +74,9 @@ func (a *Auth) LogOn(details *LogOnDetails) {
 	logon.ShaSentryfile = details.SentryFileHash
 	if details.LoginKey != "" {
 		logon.LoginKey = proto.String(details.LoginKey)
+	}
+	if details.AccessToken != "" {
+		logon.AccessToken = proto.String(details.AccessToken)
 	}
 	if details.ShouldRememberPassword {
 		logon.ShouldRememberPassword = proto.Bool(details.ShouldRememberPassword)
